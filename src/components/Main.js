@@ -4,41 +4,67 @@ import Index from "../pages/Index";
 import Show from "../pages/Show";
 
 function Main(props) {
-    const [ task, setTask ] = useState(null);
+  const [ tasks, setTasks ] = useState(null);
 
-    const URL ="http://localhost:4000/people/"
+  const URL = "http://localhost:4000/tasks/";
 
-    const getTask = async () => {
-        const response = await fetch(URL);
-        const data = await response.json();
-        setTask(data);
-    };
 
-    const createTask = async (task) => {
-        // make post request to create people
-        await fetch(URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "Application/json",
-            },
-            body: JSON.stringify(task),
-        });
-        // update list of people
-        getTask();
-    };
+  const getTasks = async () => {
+    const response = await fetch(URL);
+    const data = await response.json();
+    setTasks(data);
+  };
 
-    useEffect(() => getTask(), []);
+  const createTasks = async (task) => {
+    // make post request to create tasks
+    await fetch(URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "Application/json",
+      },
+      body: JSON.stringify(task),
+    });
+    // update list of tasks
+    getTasks();
+  };
+
+  const updateTasks = async (task, id) => {
+    // make put request to create tasks
+    await fetch(URL + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "Application/json",
+      },
+      body: JSON.stringify(task),
+    });
+    // update list of tasks
+    getTasks();
+  }
+
+  const deleteTasks = async id => {
+    // make delete request to create tasks
+    await fetch(URL + id, {
+      method: "DELETE",
+    })
+    // update list of tasks
+    getTasks();
+  }
+
+  useEffect(() => getTasks(), []);
 
   return (
     <main>
       <Switch>
         <Route exact path="/">
-          <Index task={task} createTask={createTask}     />
+          <Index tasks={tasks} createTasks={createTasks} />
         </Route>
         <Route
-          path="/Task/:id"
+          path="/Tasks/:id"
           render={(rp) => (
             <Show
+              tasks={tasks}
+              updateTasks={updateTasks}
+              deleteTasks={deleteTasks}
               {...rp}
             />
           )}
